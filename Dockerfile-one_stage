@@ -1,0 +1,91 @@
+# Imagen base oficial de Node.js versión 24
+# Docker descargará esta imagen desde Docker Hub
+# Ya incluye Node.js y npm instalados
+FROM node:24
+
+# Define el directorio de trabajo dentro del contenedor
+# Todo lo que ejecutemos después ocurrirá dentro de /usr/app
+# Si la carpeta no existe, Docker la crea automáticamente
+WORKDIR /usr/app
+
+# ---------------------------------------------------------
+# COPIAR ARCHIVOS DE DEPENDENCIAS
+# ---------------------------------------------------------
+
+# Copia package.json y package-lock.json
+# desde tu máquina local hacia el contenedor
+#
+# package*.json significa:
+# - package.json
+# - package-lock.json
+#
+# El "./" significa:
+# copiar al directorio actual (/usr/app)
+COPY package*.json ./
+
+# Instala todas las dependencias Node.js
+# definidas en package.json
+#
+# Esto crea la carpeta node_modules dentro del contenedor
+RUN npm install
+
+# ---------------------------------------------------------
+# COPIAR ARCHIVOS DE CONFIGURACIÓN TYPESCRIPT/NESTJS
+# ---------------------------------------------------------
+
+# Copia archivos de configuración de NestJS y TypeScript
+#
+# nest-cli.json:
+# configuración propia de NestJS
+#
+# tsconfig*.json:
+# puede incluir:
+# - tsconfig.json
+# - tsconfig.build.json
+COPY nest-cli.json tsconfig*.json ./
+
+# ---------------------------------------------------------
+# COPIAR CÓDIGO FUENTE
+# ---------------------------------------------------------
+
+# Copia la carpeta src completa
+# desde tu máquina local hacia el contenedor
+#
+# Dentro está todo el código NestJS
+COPY src ./src
+
+# ---------------------------------------------------------
+# COMPILAR LA APLICACIÓN
+# ---------------------------------------------------------
+
+# Ejecuta el script:
+# npm run build
+#
+# Normalmente en NestJS:
+# transpila TypeScript -> JavaScript
+#
+# El resultado queda dentro de:
+# /usr/app/dist
+RUN npm run build
+
+# ---------------------------------------------------------
+# EXPONER PUERTO
+# ---------------------------------------------------------
+
+# Informa que el contenedor utilizará el puerto 3000
+#
+# No publica el puerto automáticamente,
+# solo lo documenta para Docker
+EXPOSE 3000
+
+# ---------------------------------------------------------
+# COMANDO INICIAL DEL CONTENEDOR
+# ---------------------------------------------------------
+
+# Cuando el contenedor se inicie,
+# ejecutará:
+#
+# node dist/main.js
+#
+# Esto inicia la aplicación NestJS compilada
+CMD ["node", "dist/main.js"]
