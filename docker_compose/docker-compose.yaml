@@ -1,0 +1,40 @@
+name: wordpress-db
+services:
+  web:
+    image: wordpress:latest
+    restart: unless-stopped #que se reinicie a menos que yo lo detenga
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: base #se coloca el nombre del conector de la base de datos
+      WORDPRESS_DB_NAME: wordpress_db
+      WORDPRESS_DB_USER: wordpress_user
+      WORDPRESS_DB_PASSWORD: wordpress_password
+    networks:
+      - wordkpress-network  
+    depends_on:
+      base:
+        condition: service_healthy #espera a que la base de datos esté saludable antes de iniciar el contenedor web
+  base:
+    image: mysql:latest
+    restart: unless-stopped
+    environment:
+      MYSQL_USER: wordpress_user
+      MYSQL_PASSWORD: wordpress_password
+      MYSQL_ROOT_PASSWORD: wordpress_root_password
+      MYSQL_DATABASE: wordpress_db
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p$$MYSQL_ROOT_PASSWORD"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+    networks:
+      - wordkpress-network
+volumes:
+  db_data:
+networks:
+  wordkpress-network:
+    driver: bridge
