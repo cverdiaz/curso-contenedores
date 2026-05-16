@@ -2,14 +2,17 @@ name: wordpress-db
 services:
   web:
     image: wordpress:latest
+    #env_file: .env.wordpress #se utiliza el archivo de variables de entorno para cargar las variables necesarias para la configuración de WordPress
     restart: unless-stopped #que se reinicie a menos que yo lo detenga
     ports:
       - "8080:80"
     environment:
       WORDPRESS_DB_HOST: base #se coloca el nombre del conector de la base de datos
-      WORDPRESS_DB_NAME: wordpress_db
-      WORDPRESS_DB_USER: wordpress_user
-      WORDPRESS_DB_PASSWORD: wordpress_password
+      WORDPRESS_DB_NAME: ${DB_NAME}
+      WORDPRESS_DB_USER: ${DB_USER}
+      WORDPRESS_DB_PASSWORD_FILE: /run/secrets/wordpress_db_password #se utiliza la variable de entorno para leer la contraseña desde el archivo de secretos
+    secrets: #sección de secretos para montar el secreto en el contenedor web
+      - wordpress_db_password #se monta el secreto con el mismo nombre que se definió en la sección de secretos
     networks:
       - wordkpress-network  
     depends_on:
@@ -19,10 +22,13 @@ services:
     image: mysql:latest
     restart: unless-stopped
     environment:
-      MYSQL_USER: wordpress_user
-      MYSQL_PASSWORD: wordpress_password
-      MYSQL_ROOT_PASSWORD: wordpress_root_password
-      MYSQL_DATABASE: wordpress_db
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD_FILE: /run/secrets/wordpress_db_password #se utiliza la variable de entorno para leer la contraseña desde el archivo de secretos
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password #se utiliza la variable de entorno para leer la contraseña desde el archivo de secretos
+      MYSQL_DATABASE: ${DB_NAME}
+    secrets: #sección de secretos para montar el secreto en el contenedor de la base de datos
+      - wordpress_db_password
+      - mysql_root_password
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
@@ -38,3 +44,8 @@ volumes:
 networks:
   wordkpress-network:
     driver: bridge
+secrets:
+  wordpress_db_password:
+    file: ./secrets/wordpress_db_password.txt
+  mysql_root_password:
+    file: ./secrets/mysql_root_password.txt

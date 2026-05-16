@@ -1,0 +1,75 @@
+  305  docker compose up
+  306  cd docker-compose/
+  307  docker compose up
+  308  docker network ls
+  309  docker compose down
+  310  docker network ls
+  311  docker compose up
+  312  docker compose down
+  313  docker compose up
+  314  docker compose down
+  315  docker compose up
+  316  docker compose down
+  317  ls -l
+  318  cd ~/mnt/c/Users
+  319  cd /mnt/c/Users
+  320  ls 
+  321  cd cverdiaz/
+  322  ls -l
+  323  cd contenedores/
+  324  cd curso-contenedores/
+  325  env
+  326  docker ps
+  327  docker images
+  328  docker run --rm curso-contenedore:latest 
+  329  docker rum --rm -e USERNAME=cmd -e PORT=4000 curso-contenedores
+  330  docker run --rm -e USERNAME=cmd -e PORT=4000 curso-contenedores
+  331  docker run --rm -e USERNAME=cmd -e PORT=4000 curso-contenedore:latest 
+  332  ls -l
+  333  code .
+  334  docker run --rm --env-file .env curso-contenedore:latest 
+  335  docker network ls
+  336  docker ps
+  337  dcoker container down
+  338  docker compose down
+  339  docker ps
+  340  exit
+  341  docker compose down
+  342  cd docker-compose/
+  343  docker compose down
+  344  docker compose up
+  345  docker compose down
+  346  docker compose up
+  347  docker compose down
+  348  cd ..
+  349  git status
+  350  git add .
+  351  git commit -m "primer archivo de docker compose"
+  352  git push origin main
+  353  git branch
+  354  docker compose --env-file -env.worpress up
+  355  docker compose down -v
+  356  cd docker_compose/
+  357  docker compose down -v
+  358  docker compose --env-file .env.worpress up
+  359  ls -la
+  360  docker ps
+  361  docker compose ps
+  362  docker ps
+  363  ls -la
+  364  docker compose ps
+  365  docker compose --env-file .env.worpress up
+  366  docker compose --env-file .env.wordpress up
+  367  docker compose --env-file .env.wordpress up -d
+  368  docker compose ps
+  369  docker compose inspect web
+  370  docker compose ps
+  371  docker inspect $(docker compose ps -q web)
+  372  docker inspect $(docker compose ps -q base)
+  373  docker inspect $(docker compose ps -q web) | less
+  374  docker compose ps
+  375  history 100
+  376  history 80
+  377  history 70
+  378  history 75
+  379  history 75 > comnados_docker_compose.txt
