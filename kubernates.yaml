@@ -1,0 +1,30 @@
+apiVersion: v1 #es la version de api server de kubernates
+kind: Namespace #es el tipo de recurso que se va a crear, en este caso un espacio de nombres
+metadata:
+  name: curso-contenedores #es el nombre del espacio de nombres
+  labels:
+    app: curso-contenedores #es una etiqueta que se le asigna al espacio de nombres
+---
+apiVersion: apps/v1 #es la version de api server de kubernates
+kind: Deployment #es el tipo de recurso que se va a crear, en este caso un despliegue
+metadata:
+  name: curso-contenedores #es el nombre del despliegue
+  namespace: curso-contenedores #es el espacio de nombres donde se va a crear el despliegue
+  labels:
+    app: curso-contenedores #es una etiqueta que se le asigna al despliegue
+spec:
+  replicas: 10 #es el numero de replicas que se van a crear
+  selector:
+    matchLabels:
+      app: curso-contenedores #es la etiqueta que se va a usar para seleccionar los pods que pertenecen a este despliegue
+  template:
+    metadata:
+      labels:
+        app: curso-contenedores #es la etiqueta que se le asigna a los pods que se van a crear
+    spec:
+      containers:
+        - name: curso-contenedores #es el nombre del contenedor
+          image: cverdiaz/curso-contenedores:latest #es la imagen que se va a usar para crear el contenedor
+          imagePullPolicy: Always #es la politica de pull de la imagen, en este caso siempre se va a descargar la imagen(IfNotPresent, Always, Never)
+          ports:
+            - containerPort: 3000 #es el puerto que se va a exponer en el contenedor
