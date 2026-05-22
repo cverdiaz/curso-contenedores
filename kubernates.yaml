@@ -28,3 +28,22 @@ spec:
           imagePullPolicy: Always #es la politica de pull de la imagen, en este caso siempre se va a descargar la imagen(IfNotPresent, Always, Never)
           ports:
             - containerPort: 3000 #es el puerto que se va a exponer en el contenedor
+          readinessProbe: #es la configuracion de la sonda de disponibilidad(ver si el pods esta listo)
+            httpGet:
+              path: /health/ready #es la ruta que se va a usar para la sonda de disponibilidad
+              port: 3000
+            initialDelaySeconds: 10 #es el tiempo que se va a esperar antes de iniciar la sonda de disponibilidad
+            periodSeconds: 10 #es el tiempo que se va a esperar entre cada intento de sonda de disponibilidad
+          livenessProbe: #es la configuracion de la sonda de vida(ver si el pods esta vivo)
+            httpGet:
+              path: /health/live #es la ruta que se va a usar para la sonda de vida
+              port: 3000
+            initialDelaySeconds: 20 #es el tiempo que se va a esperar antes de iniciar la sonda de vida
+            periodSeconds: 20 #es el tiempo que se va a esperar entre cada intento de sonda de vida
+          resources: #es la configuracion de los recursos que se van a asignar al contenedor
+            limits:
+              cpu: "500m" #es el limite de CPU que se va a asignar al contenedor(es 1/4 de CPU o 0.5 CPU)
+              memory: "256Mi" #es el limite de memoria que se va a asignar al contenedor
+            requests:
+              cpu: "250m" #es la solicitud de CPU que se va a asignar al contenedor(es 1/8 de CPU o 0.25 CPU)
+              memory: "128Mi" #es la solicitud de memoria que se va a asignar al contenedor
