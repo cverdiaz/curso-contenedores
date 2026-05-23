@@ -49,9 +49,11 @@ spec:
       labels:
         app: curso-contenedores #es la etiqueta que se le asigna a los pods que se van a crear
     spec:
+      imagePullSecrets:
+        - name: regcred
       containers:
         - name: curso-contenedores #es el nombre del contenedor
-          image: cverdiaz/curso-contenedores:latest #es la imagen que se va a usar para el contenedor, se recomienda usar una etiqueta especifica en lugar de latest para evitar problemas de versionado
+          image: ghcr.io/cverdiaz/curso-contenedores:latest #es la imagen que se va a usar para crear el contenedor, en este caso se esta usando una imagen de github container registry
           imagePullPolicy: Always #es la politica de pull de la imagen, en este caso siempre se va a descargar la imagen(IfNotPresent, Always, Never)
           env:
             - name: APP_ENV #es el nombre de la variable de entorno que se va a usar en el contenedor
