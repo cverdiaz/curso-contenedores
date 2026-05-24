@@ -17,9 +17,10 @@ data:
   APP_DEBUG: "false" #es una variable de entorno que se va a usar en el contenedor
   POSTGRES_USER: postgres #es una variable de entorno que se va a usar en el contenedor
   POSTGRES_PASSWORD: postgres #es una variable de entorno que se va a usar en el contenedor
-  POSTGRES_DB: curso-contenedores #es una variable de entorno que se va a usar en el contenedor
-  ENABLE_DB: "false" #es una variable de entorno que se va a usar en el contenedor
+  POSTGRES_DB: curso_contenedores #es una variable de entorno que se va a usar en el contenedor
+  ENABLE_DB: "true" #es una variable de entorno que se va a usar en el contenedor
   APP_VERSION: "1.0.0" #es una variable de entorno que se va a usar en el contenedor
+
 ---
 apiVersion: v1 #es la version de api server de kubernates
 kind: Secret #es el tipo de recurso que se va a crear, en este caso un
@@ -61,17 +62,19 @@ spec:
                 configMapKeyRef:
                   name: curso-contenedores-config #es el nombre del mapa de configuracion donde se encuentra la variable de entorno
                   key: APP_ENV #es la clave del mapa de configuracion donde se encuentra la variable de entorno
+            - name: DB_HOST #es el nombre de la variable de entorno que se va a usar en el contenedor
+              value: curso-contenedores-postgres.curso-contenedores #es el valor de la variable de entorno, en este caso es el nombre del servicio de postgres que se va a usar para conectar la aplicacion con la base de datos
             - name: APP_DEBUG #es el nombre de la variable de entorno que se va a usar en el contenedor
               valueFrom:
                 configMapKeyRef:
                   name: curso-contenedores-config #es el nombre del mapa de configuracion donde se encuentra la variable de entorno
                   key: APP_DEBUG #es la clave del mapa de configuracion donde se encuentra la variable de entorno
-            - name: POSTGRES_USER #es el nombre de la variable de entorno que se va a usar en el contenedor
+            - name: DB_USERNAME #es el nombre de la variable de entorno que se va a usar en el contenedor
               valueFrom:
                 configMapKeyRef:
                   name: curso-contenedores-config #es el nombre del mapa de configuracion donde se encuentra la variable de entorno
                   key: POSTGRES_USER #es la clave del mapa de configuracion donde se encuentra la variable de entorno
-            - name: POSTGRES_DB #es el nombre de la variable de entorno que se va a usar en el contenedor
+            - name: DB_NAME #es el nombre de la variable de entorno que se va a usar en el contenedor
               valueFrom:
                 configMapKeyRef:
                   name: curso-contenedores-config #es el nombre del mapa de configuracion donde se encuentra la variable de entorno
@@ -86,7 +89,7 @@ spec:
                 configMapKeyRef:
                   name: curso-contenedores-config #es el nombre del mapa de configuracion donde se encuentra la variable de entorno
                   key: APP_VERSION #es la clave del mapa de configuracion donde se encuentra la variable de entorno
-            - name: POSTGRES_PASSWORD #es el nombre de la variable de entorno que se va a usar en el contenedor
+            - name: DB_PASSWORD #es el nombre de la variable de entorno que se va a usar en el contenedor
               valueFrom:
                 secretKeyRef:
                   name: curso-contenedores-secret #es el nombre del secreto donde se encuentra la variable de entorno
@@ -151,3 +154,92 @@ spec:
                 name: curso-contenedores #es el nombre del servicio al que se va a redirigir el trafico
                 port:
                   number: 80 #es el puerto del servicio al que se va a redirigir el trafico
+---
+apiVersion: apps/v1 #es la version de api server de kubernates
+kind: Deployment #es el tipo de recurso que se va a crear, en este caso un despliegue
+metadata:
+  name: curso-contenedores-postgres #es el nombre del despliegue
+  namespace: curso-contenedores #es el espacio de nombres donde se va a crear el despliegue
+  labels:
+    app: curso-contenedores-postgres #es una etiqueta que se le asigna al despliegue
+    app.kubernates.io/name: curso-contenedores-postgres #es una etiqueta que se le asigna a los pods que se van a crear
+spec:
+  replicas: 1 #es el numero de replicas que se van a crear
+  selector:
+    matchLabels:
+      app: curso-contenedores-postgres #es la etiqueta que se va a usar para seleccionar los pods que pertenecen a este despliegue
+  template:
+    metadata:
+      labels:
+        app: curso-contenedores-postgres #es la etiqueta que se le asigna a los pods que se van a crear
+    spec:
+      containers:
+        - name: postgres #es el nombre del contenedor
+          image: postgres:18 #es la imagen que se va a usar para crear el contenedor, en este caso se esta usando una imagen de postgres
+          imagePullPolicy: IfNotPresent #es la politica de pull de la imagen, en este caso se va a descargar la imagen solo si no esta presente(IfNotPresent, Always, Never)
+          env:
+            - name: DB_HOST #es el nombre de la variable de entorno que se va a usar en el contenedor
+              value: curso-contenedores-postgres.curso-contenedores #es el valor de la variable de entorno, en este caso es el nombre del servicio de postgres que se va a usar para conectar la aplicacion con la base de datos
+            - name: DB_USERNAME #es el nombre de la variable de entorno que se va a usar en el contenedor
+              valueFrom:
+                configMapKeyRef:
+                  name: curso-contenedores-config #es el nombre del mapa de configuracion donde se encuentra la variable de entorno
+                  key: POSTGRES_USER #es la clave del mapa de configuracion donde se encuentra la variable de entorno
+            - name: DB_PASSWORD #es el nombre de la variable de entorno que se va a usar en el contenedor
+              valueFrom:
+                secretKeyRef:
+                  name: curso-contenedores-secret #es el nombre del secreto donde se encuentra la variable de entorno
+                  key: POSTGRES_PASSWORD #es la clave del secreto donde se encuentra la variable de entorno
+            - name: DB_NAME #es el nombre de la variable de entorno que se va a usar en el contenedor
+              valueFrom:
+                configMapKeyRef:
+                  name: curso-contenedores-config #es el nombre del mapa de configuracion donde se encuentra la variable de entorno
+                  key: POSTGRES_DB #es la clave del mapa de configuracion donde se encuentra la variable de entorno
+          ports:
+            - containerPort: 5432 #es el puerto que se va a exponer en el contenedor
+          resources: #es la configuracion de los recursos que se van a asign
+            limits:
+              cpu: "500m" #es el limite de CPU que se va a asignar al contenedor(es 1/4 de CPU o 0.5 CPU)
+              memory: "256Mi" #es el limite de memoria que se va a asignar al contenedor
+            requests:
+              cpu: "250m" #es la solicitud de CPU que se va a asignar al contenedor(es 1/8 de CPU o 0.25 CPU)
+              memory: "128Mi" #es la solicitud de memoria que se va a asignar al contenedor
+          volumeMounts:
+            - name: postgres-storage #es el nombre del volumen que se va a montar en el contenedor
+              mountPath: /var/lib/postgresql #es la ruta recomendada por PostgreSQL 18 para montar el volumen en el contenedor
+      volumes:
+        - name: postgres-storage #es el nombre del volumen que se va a crear
+          persistentVolumeClaim:
+            #vincula el volumen del Pod con el PVC declarado antes y que se encargará de solicitar el almacenamiento al cluster
+            claimName: curso-contenedores-postgres-pvc #es el nombre del reclamo de volumen persistente que se va a usar para crear el volumen
+---
+apiVersion: v1 #es la version de api server de kubernates
+kind: Service #es el tipo de recurso que se va a crear, en este caso un servicio
+metadata:
+  name: curso-contenedores-postgres #es el nombre del servicio
+  namespace: curso-contenedores #es el espacio de nombres donde se va a crear el servicio
+  labels:
+    app: curso-contenedores-postgres #es una etiqueta que se le asigna al
+    app.kubernetes.io/name: curso-contenedores-postgres #es una etiqueta que se le asigna al servicio
+spec:
+  type: ClusterIP #es el tipo de servicio que se va a crear, en este
+  selector:
+    app: curso-contenedores-postgres #es la etiqueta que se va a usar para seleccionar los pods que pertenecen a este servicio
+  ports:
+    - name: postgres #es el nombre del puerto del servicio
+      port: 5432 #es el puerto que se va a exponer en el servicio
+      targetPort: 5432 #es el puerto que se va a usar para redirigir el trafico al contenedor
+---
+apiVersion: v1 #es la version de api server de kubernates
+kind: PersistentVolumeClaim #es el tipo de recurso que se va a crear, en este caso un reclamo de volumen persistente
+metadata:
+  name: curso-contenedores-postgres-pvc #es el nombre del reclamo de volumen persistente
+  namespace: curso-contenedores #es el espacio de nombres donde se va a crear el reclamo de volumen persistente
+  labels:
+    app: curso-contenedores-postgres #es una etiqueta que se le asigna al reclamo de volumen persistente
+spec:
+  accessModes:
+    - ReadWriteOnce #es el modo de acceso que se va a usar para el reclamo de volumen persistente(ReadWriteOnce, ReadOnlyMany, ReadWriteMany)
+  resources:
+    requests:
+      storage: 1G #es la cantidad de almacenamiento que se va a solicitar para el reclamo de volumen persistente
