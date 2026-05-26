@@ -178,19 +178,17 @@ spec:
           image: postgres:18 #es la imagen que se va a usar para crear el contenedor, en este caso se esta usando una imagen de postgres
           imagePullPolicy: IfNotPresent #es la politica de pull de la imagen, en este caso se va a descargar la imagen solo si no esta presente(IfNotPresent, Always, Never)
           env:
-            - name: DB_HOST #es el nombre de la variable de entorno que se va a usar en el contenedor
-              value: curso-contenedores-postgres.curso-contenedores #es el valor de la variable de entorno, en este caso es el nombre del servicio de postgres que se va a usar para conectar la aplicacion con la base de datos
-            - name: DB_USERNAME #es el nombre de la variable de entorno que se va a usar en el contenedor
+            - name: POSTGRES_USER #es el nombre de la variable de entorno que se va a usar en el contenedor
               valueFrom:
                 configMapKeyRef:
                   name: curso-contenedores-config #es el nombre del mapa de configuracion donde se encuentra la variable de entorno
                   key: POSTGRES_USER #es la clave del mapa de configuracion donde se encuentra la variable de entorno
-            - name: DB_PASSWORD #es el nombre de la variable de entorno que se va a usar en el contenedor
+            - name: POSTGRES_PASSWORD #es el nombre de la variable de entorno que se va a usar en el contenedor
               valueFrom:
                 secretKeyRef:
                   name: curso-contenedores-secret #es el nombre del secreto donde se encuentra la variable de entorno
                   key: POSTGRES_PASSWORD #es la clave del secreto donde se encuentra la variable de entorno
-            - name: DB_NAME #es el nombre de la variable de entorno que se va a usar en el contenedor
+            - name: POSTGRES_DB #es el nombre de la variable de entorno que se va a usar en el contenedor
               valueFrom:
                 configMapKeyRef:
                   name: curso-contenedores-config #es el nombre del mapa de configuracion donde se encuentra la variable de entorno
