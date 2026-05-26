@@ -4,7 +4,7 @@ pipeline {
     stages(){
         stage('Primer paso pipeline') {
              steps {
-                sh 'Saludos desde el terminal'
+                sh 'echo Saludos desde el terminal'
             }
         }
         stage('Test') {
