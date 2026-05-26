@@ -6,10 +6,6 @@ pipeline {
              steps {
                 sh 'Saludos desde el terminal"'
             }
-            steps {
-                echo 'Building...'
-                // Add your build commands here
-            }
         }
         stage('Test') {
             steps {
