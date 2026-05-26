@@ -7,6 +7,11 @@ pipeline {
                 sh 'echo Saludos desde el terminal'
             }
         }
+        stage('Segundo paso pipeline') {
+             steps {
+                sh 'node --version'
+            }
+        }
         stage('Test') {
             steps {
                 echo 'Testing...'
