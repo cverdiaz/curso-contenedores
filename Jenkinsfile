@@ -1,7 +1,7 @@
 pipeline {
     /*agent any*/  // Puedes usar 'any' para ejecutar en cualquier nodo disponible, o especificar un label para un nodo específico
     agent {
-        label 'docker-container' // Asegúrate de que este label coincida con el nodo que tiene Docker instalado
+        label 'wsl' // Asegúrate de que este label coincida con el nodo que tiene Docker instalado
     }
 
     stages(){ // Aquí defines las etapas de tu pipeline|
