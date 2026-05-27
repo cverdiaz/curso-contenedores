@@ -11,6 +11,9 @@ pipeline {
             }
         }
         stage('Segundo paso pipeline') {
+            agent {
+                label 'docker-container' // Asegúrate de que este label coincida con el nodo que tiene Node.js instalado
+            }
              steps {
                 sh 'node --version'
             }
