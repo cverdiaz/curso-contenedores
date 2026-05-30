@@ -1,50 +1,29 @@
 pipeline {
-    /*agent any*/  // Puedes usar 'any' para ejecutar en cualquier nodo disponible, o especificar un label para un nodo específico
-    agent {
-        label 'wsl' // Asegúrate de que este label coincida con el nodo que tiene Docker instalado
-    }
+    agent none // No se asigna un agente global, cada etapa puede definir su propio agente
 
-    stages { // Aquí defines las etapas de tu pipeline|
-        stage('Primer paso pipeline') { // Nombre de la etapa
-             steps {  // Aquí defines los pasos que se ejecutarán en esta etapa
-                sh 'echo Saludos desde el terminal'  // Comando para imprimir un mensaje en la terminal
-            }
-        }
-        stage('Segundo paso pipeline') { //permite correrotar comandos de node dentro del agente con docker instalado
-            agent {
-                label 'docker-container' // Asegúrate de que este label coincida con el nodo que tiene Docker instalado
-            }
-             steps {
-                sh 'node --version'
-            }
-        }
-        stage('Tercer paso pipeline') { //permite correr comandos de docker dentro del agente con label wsl
-             steps {
-                sh 'docker ps'
-            }
-        }
-        stage('Cuarto paso pipeline') { //permite correr comandos de docker dentro del agente con label wsl
+    stages {
+        stage('CI - nuestra aplicacion de contenedores') {
             agent {
                 docker {
-                    image 'node:22' // Usa la imagen de Docker que deseas ejecutar
-                    label 'wsl'
-                    //args '-v /var/run/docker.sock:/var/run/docker.sock' // Monta el socket de Docker para permitir la comunicación con el daemon de Docker
+                    /*
+                    si quisiera instalar las dependencias npm dentro de un contenedor docker, tendría que usar esta configuración para montar el socket de docker y así poder ejecutar comandos de docker dentro del contenedor, pero para esto es necesario aumentar el número de ejecuciones a 2 o más en el nodo con label wsl para que se ejecute en un nodo diferente al del tercer paso
+                    image 'node:24' // Usa la imagen de Docker que deseas ejecutar
+                    label 'wsl' // Asegúrate de que este label coincida con el nodo que tiene Docker instalado
+                    args '-v /var/run/docker.sock:/var/run/docker.sock' // Monta el socket de Docker para permitir la comunicación con el daemon de Docker
+                    */
+                    image 'ghcr.io/pnpm/pnpm:latest' // Usa la imagen de Docker que deseas ejecutar
+                    label 'docker' // Asegúrate de que este label coincida con el nodo que tiene Docker instalado
                 }
             }
-             steps {
-                sh 'node --version' // Comando para verificar la versión de Node.js dentro del contenedor Docker
-            }
-        }
-        stage('Test') {
-            steps {
-                echo 'Testing...'
-                // Add your test commands here
-            }
-        }
-        stage('Deploy') {
-            steps {
-                echo 'Deploying...'
-                // Add your deploy commands here
+            stages{
+                stage('CI - Instalacion de dependencias') {
+                    steps {
+                        sh '''
+                            echo "Instalando dependencias..."
+                            pnpm install
+                        '''
+                    }
+                }
             }
         }
     }
