@@ -1,6 +1,11 @@
 pipeline {
     agent none // No se asigna un agente global, cada etapa puede definir su propio agente
-
+    environment {
+        // Aquí puedes definir variables de entorno globales para todo el pipeline
+        IMAGE_NAME = 'curso-contenedores'
+        DH_REPO = 'cverdiaz/${env.IMAGE_NAME}'
+        GH_REPO = 'ghcr.io/cverdiaz/${env.IMAGE_NAME}'
+    }
     stages {
         stage('CI - nuestra aplicacion de contenedores') {
             agent {
@@ -59,11 +64,11 @@ pipeline {
                 sh '''
                     echo "Empaquetando y distribuyendo..."
                     # Aquí puedes agregar los comandos para empaquetar tu aplicación y distribuirla, por ejemplo, subirla a un registro de contenedores o a un repositorio de artefactos
-                    docker build -t curso-contenedores .
-                    docker tag curso-contenedores:latest cverdiaz/curso-contenedores
-                    docker tag curso-contenedores:latest ghcr.io/cverdiaz/curso-contenedores
-                    docker push cverdiaz/curso-contenedores
-                    docker push ghcr.io/cverdiaz/curso-contenedores
+                    docker build -t ${env.IMAGE_NAME} .
+                    docker tag ${env.IMAGE_NAME} ${env.DH_REPO}
+                    docker tag ${env.IMAGE_NAME} ${env.GH_REPO}
+                    docker push ${env.DH_REPO}
+                    docker push ${env.GH_REPO}
                 '''
             }
         }
