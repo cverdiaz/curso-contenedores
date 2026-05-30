@@ -11,8 +11,11 @@ pipeline {
             }
         }
         stage('Segundo paso pipeline') {
+            agent {
+                label 'docker-container' // Asegúrate de que este label coincida con el nodo que tiene Docker instalado
+            }
              steps {
-                sh 'command -v node >/dev/null 2>&1 && node --version || echo "node no instalado en wsl"'
+                sh 'node --version'
             }
         }
         stage('Tercer paso pipeline') {
