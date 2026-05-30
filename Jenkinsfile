@@ -20,6 +20,7 @@ pipeline {
                     steps {
                         sh '''
                             echo "Instalando dependencias..."
+                            pnpm runtime set node -g
                             pnpm install
                         '''
                     }
