@@ -12,7 +12,7 @@ pipeline {
         }
         stage('Segundo paso pipeline') {
              steps {
-                sh 'node --version'
+                sh 'command -v node >/dev/null 2>&1 && node --version || echo "node no instalado en wsl"'
             }
         }
         stage('Tercer paso pipeline') {
