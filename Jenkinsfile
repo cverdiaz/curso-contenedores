@@ -60,6 +60,10 @@ pipeline {
                     echo "Empaquetando y distribuyendo..."
                     # Aquí puedes agregar los comandos para empaquetar tu aplicación y distribuirla, por ejemplo, subirla a un registro de contenedores o a un repositorio de artefactos
                     docker build -t curso-contenedores .
+                    docker tag curso-contenedores:latest cverdiaz/curso-contenedores
+                    docker tag curso-contenedores:latest ghcr.io/cverdiaz/curso-contenedores
+                    docker push cverdiaz/curso-contenedores
+                    docker push ghcr.io/cverdiaz/curso-contenedores
                 '''
             }
         }
