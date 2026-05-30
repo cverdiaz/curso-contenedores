@@ -16,13 +16,35 @@ pipeline {
                 }
             }
             stages {
-                stage('CI - Instalacion de dependencias') {
+                stage('CI - Configuracion de pnpm y node') {
                     steps {
                         sh '''
                             echo "Instalando dependencias..."
                             pnpm runtime set node 24 -g
                             pnpm --version
+                        '''
+                    }
+                }
+                stage('CI - Instalacion de dependencias') {
+                    steps {
+                        sh '''
                             pnpm install
+                        '''
+                    }
+                }
+                stage('CI - Revisión de Linter') {
+                    steps {
+                        sh '''
+                            echo "Revisando linter..."
+                            pnpm run lint
+                        '''
+                    }
+                }
+                stage('CI - Ejecución de Build') {
+                    steps {
+                        sh '''
+                            echo "Ejecutando build..."
+                            pnpm run build
                         '''
                     }
                 }
