@@ -67,9 +67,15 @@ pipeline {
                     docker build -t ${env.IMAGE_NAME} .
                     docker tag ${env.IMAGE_NAME} ${env.DH_REPO}
                     docker tag ${env.IMAGE_NAME} ${env.GH_REPO}
-                    docker push ${env.DH_REPO}
-                    docker push ${env.GH_REPO}
                 '''
+                script {
+                    docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
+                        sh "docker push ${env.DH_REPO}"
+                    }
+                    docker.withRegistry('https://ghcr.io', 'github-credentials') {
+                        sh "docker push ${env.GH_REPO}"
+                    }
+                }
             }
         }
     }
