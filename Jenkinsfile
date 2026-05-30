@@ -53,9 +53,7 @@ pipeline {
         }
         stage('CD - Empaquetado y distribucion') {
             agent {
-                docker {
-                    label 'docker' // Asegúrate de que este label coincida con el nodo que tiene Docker instalado
-                }
+                Label 'docker' // Asegúrate de que este label coincida con el nodo que tiene Docker instalado
             }
             steps {
                 sh '''
