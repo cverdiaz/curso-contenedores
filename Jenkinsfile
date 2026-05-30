@@ -15,12 +15,13 @@ pipeline {
                     label 'docker' // Asegúrate de que este label coincida con el nodo que tiene Docker instalado
                 }
             }
-            stages{
+            stages {
                 stage('CI - Instalacion de dependencias') {
                     steps {
                         sh '''
                             echo "Instalando dependencias..."
-                            pnpm runtime set node -g
+                            pnpm runtime set node 24 -g
+                            pnpm --version
                             pnpm install
                         '''
                     }
