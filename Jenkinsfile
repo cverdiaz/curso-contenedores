@@ -3,8 +3,8 @@ pipeline {
     environment {
         // Aquí puedes definir variables de entorno globales para todo el pipeline
         IMAGE_NAME = 'curso-contenedores'
-        DH_REPO = 'cverdiaz/${IMAGE_NAME}'
-        GH_REPO = 'ghcr.io/cverdiaz/${IMAGE_NAME}'
+        DH_REPO = 'cverdiaz/curso-contenedores'
+        GH_REPO = 'ghcr.io/cverdiaz/curso-contenedores'
     }
     stages {
         stage('CI - nuestra aplicacion de contenedores') {
@@ -63,11 +63,10 @@ pipeline {
             steps {
                 sh '''
                     echo "Empaquetando y distribuyendo..."
-                        echo "$IMAGE_NAME"
                     # Aquí puedes agregar los comandos para empaquetar tu aplicación y distribuirla, por ejemplo, subirla a un registro de contenedores o a un repositorio de artefactos
-                        docker build -t "${IMAGE_NAME}" .
-                        docker tag "${IMAGE_NAME}" "${DH_REPO}"
-                        docker tag "${IMAGE_NAME}" "${GH_REPO}"
+                    docker build -t "${IMAGE_NAME}" .
+                    docker tag "${IMAGE_NAME}" "${DH_REPO}"
+                    docker tag "${IMAGE_NAME}" "${GH_REPO}"
                 '''
                 script {
                     docker.withRegistry('https://index.docker.io/v1/', 'dockerhub-credentials') {
